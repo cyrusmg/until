@@ -8,8 +8,16 @@ def parse_datetime(date, time):
     try:
         return datetime.strptime(s, "%Y-%m-%d %H:%M")
     except ValueError:
-        msg = "Not a valid date: '{0}'.".format(s)
+        msg = "Not a valid date: '{}'.".format(s)
         raise argparse.ArgumentTypeError(msg)
+
+def stringify(time, name):
+    if time == 0:
+        return None
+    elif time == 1:
+        return "{} {}".format(time, name)
+    else:
+        return "{} {}s".format(time, name)
 
 parser = argparse.ArgumentParser(description='Calculate days since/until a date')
 parser.add_argument('date', help='event date in YYYY-MM-DD format')
@@ -23,11 +31,14 @@ timedelta = abs(event_datetime - datetime.now())
 days = timedelta.days
 hours = timedelta.seconds // 3600
 
-if days == 0 and hours == 0:
-    print("It's now!")
-elif days == 0 and hours != 0:
-    print("{} hours".format(hours))
-elif days != 0 and hours == 0:
-    print("{} days".format(days))
+days = stringify(days, "day")
+hours = stringify(hours, "hour")
+
+if days and hours:
+    print("{}, {}".format(days, hours))
+elif days:
+    print("{}".format(days))
+elif hours:
+    print("{}".format(hours))
 else:
-    print("{} days, {} hours".format(days, hours))
+    print("It's now!")
